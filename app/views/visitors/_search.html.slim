@@ -1,0 +1,11 @@
+
+= form_tag root_path, class: "form-inline pull-right" , style: "position:relative;top:-60px;", method: :get do
+  .input-group.input-group-lg
+    - if params[:query].present?
+      .input-group-btn
+        = link_to "clear", recipes_path, class: "btn btn-default"
+    = text_field_tag :query, params[:query], class: "form-control pull-right", id: "recipe_search", autocomplete: "off"
+    .input-group-btn
+      = submit_tag "Search", class: "btn btn-primary"
+br
+br

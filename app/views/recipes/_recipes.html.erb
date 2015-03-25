@@ -1,0 +1,119 @@
+<% if user_signed_in? %>
+    <div class="data-box">
+    <%= simple_form_for(@recipe) do |f| %>
+        <%= f.error_notification %>
+
+    <div class="form-inputs">
+        <%= f.input :name %>
+        <%= f.input :calories %>
+        <%= f.input :fat %>
+        <%= f.input :protein %>
+        <%= f.input :image %>
+        <%= f.input :ingredient_list,:label=> "Ingredients(Separate with commas)",:value=>"" %>
+    </div>
+
+    <%= f.input :instructions, :as => :ckeditor, :input_html => { :ckeditor => {:toolbar => 'Full'} } %>
+    <div class="form-actions">
+        <%= f.button :submit %>
+    </div>
+
+<% end %>
+</div>
+    </div>
+  
+    <div class = "popular-box">
+<h3> Popular Ingredients </h3>
+<div class="tagify"> <% tag_cloud(@tags, %w(css1 css2 css3 css4)) do |tag, css_class| %>
+    <%= link_to tag.name+',',tag_path(tag.name), :class => css_class %>
+<% end %> 
+</div>
+    </div>
+<div class = "post-box">
+<% @recipes.each do |r| %>
+<div class="col-xs-2 postimgimg-responsive ">  <%= image_tag r.user.avatar.url(:medium),:size => "100x100",class: 'postavatar img-c' %> </div>
+<div class="col-xs-10">
+    <%= link_to "#{image_tag(r.image.url)}".html_safe, r %>
+    </div>
+<%= raw r.instructions%>
+<%= time_ago_in_words r.created_at %>
+<br/> Posted by 
+<% if current_user.id == r.user_id %>
+    <p>You</p>
+        <% else %>
+    <%= User.find(r.user_id).name %>  
+        <% end %>
+<hr>
+<% r.comments.each do |comment| %>
+    <% @user=comment.user%>
+<div class="row">
+    <div class="col-xs-12 comment">
+        <div class="row">
+            <div class="col-xs-2 commentimg"> <%= image_tag @user.avatar.url(:medium),:size=>"50x50",class: 'img-thumbnail' %>  </div>
+            <div class="col-xs-10">
+                <div class="pull-right delete">
+                    <% if @user==current_user #|| current_user == r.user%>
+                        <%= link_to 'x', [comment.recipe, comment], method: :delete, class: "btn btn-danger btn-xs", title: "Detele Comment", data: { confirm: 'Are you sure?' } %>
+                <% end %>
+                </div>
+                <%= comment.content %><br/>
+                <small>-<%= comment.commenter %></small><br/>
+            </div>
+        </div>
+    </div>
+</div>  
+            <% end %><br>
+
+
+<%= simple_form_for([r, r.comments.build], :defaults => { :input_html => { :class => "form-control" } } )  do |f| %>
+    <%= f.input :content ,{:onfocus => "disable()" , :onblur => "enable()" , :required => true, label: false} %>
+
+<%= f.submit :Comment , {:class => "btn btn-success" , :name => "comment-btn"} %>
+            <% end %>
+
+
+
+<hr/>
+    <% end %>
+</div>        
+<% else %>
+<br><br><br>
+<%= render 'search' %>
+
+
+  <% if @recipes!=nil %>
+<% @recipes.each_with_index do |r,i| %>
+<div class="b<%=i%2+1%>">
+<section class="bussinesscard">
+    <div class="flip">
+        <div class="front">       
+            <div class="top">       
+                <div class="logo"><%= image_tag(r.image.url) %>
+            </div>        
+            </div>
+            <div class="nametroduction">
+                <div class="name"><%= r.name %></div>
+                <div class="introduction">Hover to see the nutrition facts</div>
+            </div>  
+            <div class="contact">           
+                <div class="website">
+                    <a href="#">Calories :  <%= r.calories %></a>
+                </div>
+                <div class="twitter">
+                    <a href="#">Fat : <%= r.fat %></a> 
+                </div>                        
+                <div class="email ">
+                    <a href="#">Protein :  <%= r.protein %></a>
+                </div>
+                <div class="procedure">
+                    <%= link_to "Procedure",r , :class => 'styled-button-10' %>
+                </div>
+            </div>            
+        </div>
+        <div class="back"></div> 
+    </div>
+</section>
+    </div>
+
+    <% end %>
+    <% end %>
+<% end %>

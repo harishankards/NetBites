@@ -1,0 +1,18 @@
+<%= simple_form_for(@recipe) do |f| %>
+  <%= f.error_notification %>
+
+  <div class="form-inputs">
+    <%= f.input :name %>
+    <%= f.input :calories %>
+    <%= f.input :fat %>
+    <%= f.input :protein %>
+    <%= f.input :image %>
+  <%= f.input :instructions, :as => :ckeditor, :input_html => { :ckeditor => {:toolbar => 'Full'} } %>
+  <%= f.input :ingredient_list %>
+  </div>
+
+  <div class="form-actions">
+    <%= f.button :submit %>
+  </div>
+
+<% end %>
